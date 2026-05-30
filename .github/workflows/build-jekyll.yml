@@ -1,0 +1,37 @@
+name: Build Jekyll Site
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: true
+    
+    - name: Install dependencies
+      run: |
+        gem install bundler
+        bundle install
+    
+    - name: Build site with Jekyll
+      run: bundle exec jekyll build --trace
+    
+    - name: Upload static files as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: static-website
+        path: ./_site/
+        retention-days: 7
